@@ -264,6 +264,13 @@ nav{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap}
   .ai-panel-ov{background:transparent;pointer-events:none}
   .ai-panel{pointer-events:auto;max-width:380px;box-shadow:-4px 0 18px rgba(20,30,45,0.12)}
 }
+.ai-usage-lbl{font-family:var(--body);font-size:0.68rem;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:0.35rem}
+.ai-usage-track{width:100%;height:8px;border-radius:5px;background:rgba(20,30,45,0.1);overflow:hidden}
+.ai-usage-fill{height:100%;border-radius:5px;transition:width .3s ease}
+.ai-usage-txt{font-family:var(--body);font-size:0.78rem;font-weight:600;margin:0.35rem 0 1rem}
+.ai-usage-notice{font-family:var(--body);font-size:0.8rem;color:var(--muted);
+  background:rgba(20,30,45,0.06);border-radius:3px;padding:0.6rem 0.8rem;margin-bottom:1rem}
 .pm-box{margin-top:1.4rem;padding:1rem;
   background:linear-gradient(135deg,rgba(27,58,107,0.05),rgba(196,147,42,0.05));
   border:1px solid var(--border);border-radius:3px}
@@ -348,6 +355,12 @@ nav{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap}
 .foot-links span,.foot-links a{cursor:pointer;transition:color .2s;color:var(--muted);text-decoration:none}
 .foot-links span:hover,.foot-links a:hover{color:var(--gold)}
 .foot-copy{font-family:var(--body);font-size:0.72rem;color:var(--muted);opacity:0.7}
+.foot-gift-wrap{display:flex;justify-content:center;margin:1.1rem 0 1.3rem}
+.foot-gift-circle{width:50px;height:50px;border-radius:50%;border:1px solid var(--border);
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;
+  box-shadow:0 1px 4px rgba(27,58,107,0.08)}
+.foot-gift-circle:hover{transform:scale(1.08);box-shadow:0 3px 10px rgba(27,58,107,0.15)}
 .loading{display:flex;align-items:center;gap:0.45rem;font-family:var(--body);
   font-size:0.86rem;color:var(--muted);font-style:italic;padding:0.9rem 0}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -421,7 +434,7 @@ const SAMPLE = [
     preview:"Antes de empezar a contar mi vida, quiero decir algo con sinceridad...",
     text:"ÍNDICE:\nIntroducción: El porqué de estas páginas\nCapítulo 1: Nacimiento de Pablito\nCapítulo 2: Un pínfano llamado Pablo Cava Domínguez\nCapítulo 3: Mi padre Jacinto\nCapítulo 4: La familia de mi padre\nCapítulo 5: Navidades de 1951\nCapítulo 6: Segovia: 1954\nCapítulo 7: Años 1954–1955\nCapítulo 8: Hemos llegado a Murcia: 1955\nCapítulo 9: Manuel Cava, mi tutor: 1962\nCapítulo 10: Verano de 1964\nCapítulo 11: Años 1960–1962\nCapítulo 12: La muerte de mi madre\nCapítulo 13: Campeonato Nacional de Atletismo (1958)\nCapítulo 14: El destino (1959)\nCapítulo 15: Navidades de 1963\nCapítulo 16: Los señores Remigio (1963–1964)\nCapítulo 17: Visita a mi tía Rosa en Barcelona (1964)\nCapítulo 18: Alsasua, Navarra (1964)\nCapítulo 19: Amor a primera vista (Alsasua, 1964)\nCapítulo 20: Un encargo inesperado en Valladolid\nCapítulo 21: La mili (1965)\nCapítulo 22: Licenciado (el 15 de diciembre de 1967), pero…\nCapítulo 23: De Alcántara a Barcelona (1967)\nCapítulo 24: Visita a un compañero de colegio (1967)\nCapítulo 25: Tres trabajos, un pínfano y un currante nato (1969)\nCapítulo 26: Diseñando circuitos impresos y mi futuro\nCapítulo 27: Verano en Estartit\nCapítulo 28: El señor Pajarito y la caída de DIGIPLOT\nCapítulo 29: Juan Belmonte (1980)\nCapítulo 30: Historia de mi vida (Yako)\nCapítulo 31: Carta a Chencha\nCapítulo 32: Pharmispania y la piscina: últimos años de trabajo\nCapítulo 33: Ruta extremeña con mi hijo\nCapítulo 34: Pinfanada en Valladolid\nAnexos: Sobre DIGIPLOT y la herida invisible\nPostdata: Familia futbolera – Can Barça\n\n— — —\n\nAntes de empezar a contar mi vida, quiero decir algo con sinceridad: nunca he sido un hombre de leer muchos libros, y menos aún de escribirlos. Pero son tantas las cosas que quiero dejar por escrito, que sé que algunas quedarán pendientes para otra ocasión.\n\nHe decidido no hablar de vivencias relacionadas con mi mujer, Ramona –fallecida el 26 de febrero de 2024– ni con mis hijos. Ellos forman parte de mi intimidad y quiero respetar su privacidad. Lo que sí puedo asegurar es que todo lo que aquí cuento es real. Son sucesos que viví, que me marcaron y que han influido en mi forma de ser a lo largo de toda mi vida.\n\nEn 1943 se formalizó en España el Patronato de Huérfanos del Ejército. Se crearon centros de enseñanza para acoger a los hijos de militares fallecidos por cualquier circunstancia. Para las viudas o familiares que tenían a su cargo a esos niños, no suponía ningún gasto económico. Ese Patronato formó parte esencial de mi historia.\n\nEste libro va dedicado a mi madre, Francisca Domínguez Miranda, que no tuvo la suerte de disfrutar de la vida como cualquier cristiano merece. Fue una madre luchadora, que se sacrificó por sus hijos. Un derrame cerebral apagó la luz de su vida cuando por fin podía empezar a disfrutar de nosotros. Mamá: te quise mucho y te sigo queriendo. D.E.P.\n\nTambién va dedicado a mi padre, Jacinto Cava González. Se fue demasiado pronto. Yo, Pablito, tenía solo dieciocho meses y no pude conocerlo. Mi madre me habló mucho de él: que era muy bueno. A veces ser tan bueno no es bueno. Él se dejó llevar por esa bondad, aun estando delicado de salud. No le guardo rencor. Amaba su profesión y eso le hizo decir que sí cuando no debía. D.E.P.\n\nAntes de seguir, quiero presentar a mis padres con un recuerdo cariñoso.", fullUrl:"pablo-cava.html", tags:["Extremadura","traición","memoria"] },
   { id:4, name:"X. Batlle", title:"La vida escrita", born:1961, country:"España", flag:"🇪🇸", lang:"CA", profession:"filósofo", founder:false,
-    preview:"Este no va a ser un relato escrito a lo largo, sino hacia el fondo de mí mismo...",
+    preview:"Este no va a ser un relato escrito a lo largo de mi vida, sino hacia el fondo de mí mismo.",
     text:"ÍNDICE:\nPresentación: De Barcelona al mundo\nÁlbum de familia: 1998\nEl nuevo mundo: 2001\nCelebración del medio siglo: 2011\nEl año de la pandemia: 2020\nRoda al món i torna al Born: 2025\nComiat: La solitud del silici\n\n— — —\n\nEste no va a ser un relato escrito a lo largo de mi vida, sino hacia el fondo de mí mismo. Podría decirse que nací en una cuna dorada (tiempos de paz, familia acomodada, una ciudad hermosa que bebe en las aguas del Mediterráneo…) y que nada me faltó, porque mis padres y el resto de mi familia, además de nutrir bien mi cuerpo y regalarme una buena educación, me llenaron de ideas y de sueños. Quizá, demasiados sueños. Entre la curiosidad y la imaginación, algo me faltó siempre.\n\nDos amigos de juventud me han acompañado hasta el día de hoy: Imanol Lizarralde, otro «espíritu contemplativo» desubicado y lletraferit como yo, y Toni Alastuey, un «hombre de acción» cuyo aprecio y fortaleza me permitieron conocer aquello que era incapaz de vislumbrar con mis propios ojos, cuando no seguir adelante.\n\nEstudié Filosofía, y mi formación me permitió trabajar en una editorial (Ronsel, fundada por Olegario Sotelo Blanco) durante quince años, publicando a Dickens, Saramago y también a autores noveles como Miguel Herráez, Miguel Catalán o Asdrúbal Hernández, que con el paso de los años se convirtieron en amigos.\n\nEn ese momento de crecimiento personal nacieron mis dos hijos (Carlos y Àlex), y comencé a sufrir las primeras orfandades, lo que anunciaba un cambio de ciclo. Poco después de cumplir los cuarenta, me divorcié y mi vida se partió en dos. Dejé entonces mi trabajo, mi ciudad, mi pasado y salté al vacío.\n\nPor desgracia, a mí nunca me cuadraron las palabras de mi abuelo paterno: «¿Y cómo queréis que me haga rico si me paso el día trabajando?». Yo me paso el día pensando, soñando, escribiendo, y eso no da ni para ser pobre.", fullUrl:"javier-batlle.html", tags:["Barcelona","poesía","memoria"] },
 ];
 
@@ -590,6 +603,20 @@ const T = {
     privacy_back_btn:"← Volver a mi libro",
     ai_h:"Asistente IA",ai_sub:"La IA se adapta a tu voz y tu idioma.",
     ai_open_panel:"Abrir el Asistente",ai_listen:"Escuchar",ai_stop_listen:"Detener",
+    ai_usage_h:"Uso de IA",ai_usage_ok:"Con margen de sobra",ai_usage_mid:"Se está acabando",
+    ai_usage_low:"Casi agotado",ai_usage_none:"Se ha agotado",
+    ai_recharge_btn:"Recargar 5€",
+    ai_recharge_notice:"Esta función estará activa en cuanto abramos los pagos en la plataforma. De momento no se te ha cobrado nada.",
+    gift_link:"🎁",gift_h:"Regala el Plan Familiar",
+    gift_sub:"Regala a alguien especial la oportunidad de escribir y conservar su historia, con toda la ayuda incluida.",
+    gift_item1:"Asistente de IA para escribir (equivalente a unas 30 horas de uso)",
+    gift_item2:"10 fotografías incluidas",
+    gift_item3:"Archivo PDF imprimible, de regalo",
+    gift_price:"15€",
+    gift_note:"Si más adelante quiere seguir usando el Asistente, podrá contratarlo él mismo, como cualquier otro Autor.",
+    gift_your_name:"Tu nombre",gift_message:"Mensaje personal (opcional)",gift_recipient_email:"Email de la persona a quien se lo regalas",
+    gift_reserve_btn:"Reservar este regalo",
+    gift_notice:"Esta función estará activa en cuanto abramos los pagos en la plataforma. De momento no se te ha cobrado nada.",
     ai_continue:"Continuar",ai_continue_d:"sigue desde donde lo dejé",
     ai_improve:"Mejorar",ai_improve_d:"más evocador, misma voz",
     ai_structure:"Sugerir estructura",ai_structure_d:"qué contar y cómo",
@@ -817,6 +844,20 @@ const T = {
     privacy_back_btn:"← Back to my book",
     ai_h:"AI Assistant",ai_sub:"The AI adapts to your voice and language.",
     ai_open_panel:"Open the Assistant",ai_listen:"Listen",ai_stop_listen:"Stop",
+    ai_usage_h:"AI usage",ai_usage_ok:"Plenty left",ai_usage_mid:"Running low",
+    ai_usage_low:"Almost out",ai_usage_none:"Used up",
+    ai_recharge_btn:"Top up €5",
+    ai_recharge_notice:"This feature will be active once we turn on payments on the platform. Nothing has been charged yet.",
+    gift_link:"🎁",gift_h:"Gift the Family Plan",
+    gift_sub:"Give someone special the chance to write and preserve their story, with all the help included.",
+    gift_item1:"AI writing assistant (equivalent to about 30 hours of use)",
+    gift_item2:"10 photos included",
+    gift_item3:"Printable PDF file, on us",
+    gift_price:"€15",
+    gift_note:"If they'd like to keep using the Assistant later on, they can subscribe themselves, like any other Author.",
+    gift_your_name:"Your name",gift_message:"Personal message (optional)",gift_recipient_email:"Email of the person you're gifting this to",
+    gift_reserve_btn:"Reserve this gift",
+    gift_notice:"This feature will be active once we turn on payments on the platform. Nothing has been charged yet.",
     ai_continue:"Continue",ai_continue_d:"carry on from where I left off",
     ai_improve:"Improve",ai_improve_d:"more evocative, same voice",
     ai_structure:"Suggest structure",ai_structure_d:"what to tell and how",
@@ -1780,6 +1821,8 @@ function AuthoredWrite({setView,onPublish,onUnpublish,t,lang,onLegal,email,onLog
   const [ao,setAo]=useState("");const [al,setAl]=useState(false);const [am,setAm]=useState("");
   const [tl,setTl]=useState("EN");const [pub,setPub]=useState(false);
   const [showAiPanel,setShowAiPanel]=useState(false);
+  const [aiUsage,setAiUsage]=useState(100);
+  const [rechargeMsg,setRechargeMsg]=useState(false);
   const [speaking,setSpeaking]=useState(false);
   const speak=(text)=>{
     if(!("speechSynthesis" in window)) return;
@@ -1810,6 +1853,7 @@ function AuthoredWrite({setView,onPublish,onUnpublish,t,lang,onLegal,email,onLog
 
   const run=async(mode)=>{
     if(!f.text.trim()&&mode!=="structure")return;
+    if(aiUsage<=0){setRechargeMsg(true);return;}
     setAl(true);setAm(mode);setAo("");
     const ln=LANGS_UI.find(l=>l.code===tl)?.label||tl;
     try{
@@ -1819,6 +1863,7 @@ function AuthoredWrite({setView,onPublish,onUnpublish,t,lang,onLegal,email,onLog
       else if(mode==="translate"){sys="Eres un traductor literario. Traduce al "+ln+" preservando la voz personal. Adapta también la puntuación del diálogo y las comillas a la convención propia de "+ln+" —no conserves el guion de diálogo ni las comillas angulares del original si esa no es la convención habitual en el idioma de destino—. Solo la traducción.";msg=f.text;}
       else if(mode==="structure"){sys="Eres un editor amable. Sugiere estructura y temas para esta autobiografía. Sé conciso.";msg=f.text||"Nombre: "+f.name+". País: "+f.country+". Año: "+f.born+".";}
       setAo(await callAI(sys,msg));
+      setAiUsage(p=>Math.max(0,p-14));
     }catch(e){setAo("Error.");}
     setAl(false);
   };
@@ -2454,7 +2499,7 @@ function AuthoredWrite({setView,onPublish,onUnpublish,t,lang,onLegal,email,onLog
 
         <AssistantPanel open={showAiPanel} onClose={()=>{if("speechSynthesis" in window)window.speechSynthesis.cancel();setSpeaking(false);setShowAiPanel(false);}} t={t}
           al={al} ao={ao} am={am} run={run} apply={apply} tl={tl} setTl={setTl}
-          speak={speak} speaking={speaking}/>
+          speak={speak} speaking={speaking} aiUsage={aiUsage} rechargeMsg={rechargeMsg} setRechargeMsg={setRechargeMsg}/>
       </div>
     </div>
   );
@@ -2465,24 +2510,35 @@ const optCardSubStyle={color:"var(--muted)",fontSize:"0.82rem"};
 const editIconStyle={background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:"0.78rem",padding:"0 3px"};
 const arrowStyle={background:"none",border:"none",color:"var(--navy)",cursor:"pointer",fontSize:"0.68rem",lineHeight:1,padding:"1px 4px"};
 
-function AssistantPanel({open,onClose,t,al,ao,am,run,apply,tl,setTl,speak,speaking}) {
+function AssistantPanel({open,onClose,t,al,ao,am,run,apply,tl,setTl,speak,speaking,aiUsage,rechargeMsg,setRechargeMsg}) {
   if(!open) return null;
+  const usageLabel=aiUsage<=0?t.ai_usage_none:aiUsage<20?t.ai_usage_low:aiUsage<50?t.ai_usage_mid:t.ai_usage_ok;
+  const usageColor=aiUsage<=0?"#b23b3b":aiUsage<20?"#C4932A":aiUsage<50?"#C4932A":"#3f7a4e";
   return ReactDOM.createPortal((
     <div className="ai-panel-ov" onClick={onClose}>
       <div className="ai-panel" onClick={e=>e.stopPropagation()}>
         <button className="ai-panel-x" onClick={onClose}>✕</button>
         <div className="aip-h"><span style={{color:"var(--gold)"}}>✦</span> {t.ai_h}</div>
         <p className="aip-sub">{t.ai_sub}</p>
+
+        <div className="ai-usage-lbl">{t.ai_usage_h}</div>
+        <div className="ai-usage-track"><div className="ai-usage-fill" style={{width:aiUsage+"%",background:usageColor}}/></div>
+        <p className="ai-usage-txt" style={{color:usageColor}}>{usageLabel}</p>
+        {aiUsage<=0&&(
+          <button className="btn-out" style={{width:"100%",marginBottom:"1rem"}} onClick={()=>setRechargeMsg(true)}>{t.ai_recharge_btn}</button>
+        )}
+        {rechargeMsg&&<p className="ai-usage-notice">{t.ai_recharge_notice}</p>}
+
         <div className="ai-btns">
-          <button className="aib" disabled={al} onClick={()=>run("continue")}><span>→</span><span><b>{t.ai_continue}</b> — {t.ai_continue_d}</span></button>
-          <button className="aib" disabled={al} onClick={()=>run("improve")}><span>✦</span><span><b>{t.ai_improve}</b> — {t.ai_improve_d}</span></button>
-          <button className="aib" disabled={al} onClick={()=>run("structure")}><span>◈</span><span><b>{t.ai_structure}</b> — {t.ai_structure_d}</span></button>
+          <button className="aib" disabled={al||aiUsage<=0} onClick={()=>run("continue")}><span>→</span><span><b>{t.ai_continue}</b> — {t.ai_continue_d}</span></button>
+          <button className="aib" disabled={al||aiUsage<=0} onClick={()=>run("improve")}><span>✦</span><span><b>{t.ai_improve}</b> — {t.ai_improve_d}</span></button>
+          <button className="aib" disabled={al||aiUsage<=0} onClick={()=>run("structure")}><span>◈</span><span><b>{t.ai_structure}</b> — {t.ai_structure_d}</span></button>
         </div>
         <hr className="sep"/>
         <div className="tr-row2">
           <span className="tr-lbl">{t.translate_to}</span>
           <select className="sel" style={{flex:1}} value={tl} onChange={e=>setTl(e.target.value)}>{LANGS_UI.map(l=><option key={l.code} value={l.code}>{l.label}</option>)}</select>
-          <button className="btn-sm" disabled={al} onClick={()=>run("translate")}>{t.go}</button>
+          <button className="btn-sm" disabled={al||aiUsage<=0} onClick={()=>run("translate")}>{t.go}</button>
         </div>
         {al&&<div className="loading"><span className="sp"/>{t.ai_thinking}</div>}
         {ao&&!al&&(
@@ -2500,7 +2556,36 @@ function AssistantPanel({open,onClose,t,al,ao,am,run,apply,tl,setTl,speak,speaki
   ), document.body);
 }
 
-function Footer({t,onContact,onLegal,onCollab,onFaq}) {
+function GiftModal({onClose,t}) {
+  const [f,setF]=useState({name:"",msg:"",email:""});
+  const [reserved,setReserved]=useState(false);
+  const up=(k,v)=>setF(p=>({...p,[k]:v}));
+  return (
+    <div className="ov" onClick={onClose}>
+      <div className="modal" style={{maxWidth:"460px"}} onClick={e=>e.stopPropagation()}>
+        <button className="modal-x" onClick={onClose}>✕</button>
+        <div className="modal-h">{t.gift_h}</div>
+        <p className="modal-sub">{t.gift_sub}</p>
+        <ul style={{fontFamily:"var(--body)",fontSize:"0.88rem",lineHeight:1.9,paddingLeft:"1.1rem",marginBottom:"0.8rem"}}>
+          <li>✦ {t.gift_item1}</li>
+          <li>📷 {t.gift_item2}</li>
+          <li>📄 {t.gift_item3}</li>
+        </ul>
+        <div style={{fontFamily:"var(--serif)",fontSize:"1.7rem",color:"var(--navy)",textAlign:"center",margin:"0.6rem 0 0.9rem"}}>{t.gift_price}</div>
+        <p style={{fontFamily:"var(--body)",fontSize:"0.78rem",fontStyle:"italic",color:"var(--muted)",marginBottom:"1.1rem"}}>{t.gift_note}</p>
+        {!reserved&&(<>
+          <div className="fld"><label className="lbl">{t.gift_your_name}</label><input className="inp" value={f.name} onChange={e=>up("name",e.target.value)}/></div>
+          <div className="fld"><label className="lbl">{t.gift_message}</label><textarea className="ta" style={{minHeight:"70px"}} value={f.msg} onChange={e=>up("msg",e.target.value)}/></div>
+          <div className="fld"><label className="lbl">{t.gift_recipient_email}</label><input className="inp" type="email" value={f.email} onChange={e=>up("email",e.target.value)}/></div>
+          <button className="btn-pub" disabled={!f.name||!f.email} onClick={()=>setReserved(true)}>{t.gift_reserve_btn}</button>
+        </>)}
+        {reserved&&<p className="ai-usage-notice" style={{marginTop:"0.5rem"}}>{t.gift_notice}</p>}
+      </div>
+    </div>
+  );
+}
+
+function Footer({t,onContact,onLegal,onCollab,onFaq,onGift}) {
   return (
     <footer className="foot">
       <img src={LOGO_SMALL} alt="Locus Mundi"/>
@@ -2512,6 +2597,9 @@ function Footer({t,onContact,onLegal,onCollab,onFaq}) {
         <span className="foot-lnk" onClick={()=>onLegal("cookies")}>{t.foot_cookies}</span>
         <span className="foot-lnk" onClick={()=>onLegal("condiciones")}>{t.foot_condiciones}</span>
         <span className="foot-lnk" onClick={onContact}>{t.foot_contact}</span>
+      </div>
+      <div className="foot-gift-wrap">
+        <span className="foot-gift-circle" onClick={onGift} title={t.gift_h}>{t.gift_link}</span>
       </div>
       <div className="foot-copy">locusmundi.com · {new Date().getFullYear()}</div>
     </footer>
@@ -2528,6 +2616,7 @@ function App() {
   const [showContact,setShowContact]=useState(false);
   const [showLegal,setShowLegal]=useState(null);
   const [showCollab,setShowCollab]=useState(false);
+  const [showGift,setShowGift]=useState(false);
   const [showSponsor,setShowSponsor]=useState(false);
   const [showFaq,setShowFaq]=useState(false);
   const [cookieOk,setCookieOk]=useState(false);
@@ -2547,7 +2636,8 @@ function App() {
       {view==="library"&&<Library autos={autos} openAuto={open} t={t}/>}
       {view==="read"&&<Read auto={sel} setView={setView} t={t}/>}
       {view==="write"&&<Write setView={setView} onPublish={a=>{setAutos(p=>[...p,a]);}} onUnpublish={id=>setAutos(p=>p.filter(x=>x.id!==id))} t={t} lang={lang} onLegal={()=>setShowLegal("condiciones")}/>}
-      <Footer t={t} onContact={()=>setShowContact(true)} onLegal={setShowLegal} onCollab={()=>setShowCollab(true)} onFaq={()=>setShowFaq(true)}/>
+      <Footer t={t} onContact={()=>setShowContact(true)} onLegal={setShowLegal} onCollab={()=>setShowCollab(true)} onFaq={()=>setShowFaq(true)} onGift={()=>setShowGift(true)}/>
+      {showGift&&<GiftModal onClose={()=>setShowGift(false)} t={t}/>}
       {showContact&&<ContactModal onClose={()=>setShowContact(false)} t={t}/>}
       {showLegal&&<LegalModal docKey={showLegal} onClose={()=>setShowLegal(null)} t={t} lang={lang}/>}
       {showCollab&&<CollaborateModal onClose={()=>setShowCollab(false)} t={t} lang={lang} onSponsor={()=>setShowSponsor(true)}/>}
