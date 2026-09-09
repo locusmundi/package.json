@@ -375,8 +375,23 @@ nav{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
+
+// ---- Cliente de Supabase (Fase B: sustituye a la autenticación simulada) --
+const SUPABASE_URL = "https://olpfybpykuascwltnqtv.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_p0cfcLah6MHGQ7ELm9b60g_jTHho-g8";
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Hash SHA-256 en hexadecimal (Web Crypto, nativo del navegador, sin
+// librerías). Se usa para la respuesta de seguridad: nunca se guarda en
+// claro, igual que ocurre con una contraseña.
+async function sha256Hex(text) {
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
 
 // Get logos from pre-rendered img tags (avoids Babel parsing huge strings)
 const LOGO_SMALL = document.getElementById('logo-small').src;
@@ -390,26 +405,12 @@ const LANGS_UI = [
   {code:"RU",label:"Русский"},{code:"HI",label:"हिन्दी"},{code:"GL",label:"Galego"},{code:"CA",label:"Català"},
 ];
 
-// ---- Autenticación simulada (Fase A, sin coste) ----------------------------
-// Todo esto vive en localStorage, en el propio navegador. No es seguridad real:
-// es una simulación de la forma y la lógica de las pantallas, lista para
-// sustituirse por Supabase Auth en la Fase B (ver LOCUS_MUNDI_HOJA_DE_RUTA.md,
-// Fase B, punto 4, y LOCUS_MUNDI_ESCRIBE_TU_HISTORIA_v2_1.md, sección 1).
-const AUTH_KEY = "lm_authors";
-const SESSION_KEY = "lm_session";
-const loadAuthors = () => { try { return JSON.parse(localStorage.getItem(AUTH_KEY)) || {}; } catch (e) { return {}; } };
-const saveAuthors = (authors) => localStorage.setItem(AUTH_KEY, JSON.stringify(authors));
-const getSession = () => localStorage.getItem(SESSION_KEY) || null;
-const setSession = (email) => email ? localStorage.setItem(SESSION_KEY, email) : localStorage.removeItem(SESSION_KEY);
+// ---- Persistencia del libro (todavía en localStorage) ----------------------
+// Pendiente de migrar a Supabase (tabla `historias`) en el siguiente paso de
+// la Fase B. La autenticación (arriba) ya es real; esto todavía no.
 const bookKey = (email) => "lm_book_" + email.toLowerCase().trim();
 const loadBook = (email) => { try { return JSON.parse(localStorage.getItem(bookKey(email))); } catch (e) { return null; } };
 const saveBook = (email, book) => localStorage.setItem(bookKey(email), JSON.stringify(book));
-const AUTHOR_SEQ_KEY = "lm_author_seq";
-const assignAuthorNumber = () => {
-  const n = (parseInt(localStorage.getItem(AUTHOR_SEQ_KEY)) || 0) + 1;
-  localStorage.setItem(AUTHOR_SEQ_KEY, String(n));
-  return n;
-};
 
 const SECQ = {
   ES: ["¿Nombre de tu primera mascota?","¿Ciudad donde naciste?","¿Nombre de tu mejor amigo/a de la infancia?","¿Cuál fue tu primer trabajo?"],
@@ -667,8 +668,10 @@ const T = {
     auth_recover_h:"Recuperar contraseña",
     auth_recover_sub:"Te enviamos un enlace a tu correo. Ábrelo y podrás entrar directamente y elegir una contraseña nueva.",
     auth_recover_btn:"Enviar enlace",
+    auth_check_email_h:"Revisa tu correo",
+    auth_check_email_sub:"Te hemos enviado un enlace de confirmación. Ábrelo desde tu correo para poder entrar por primera vez.",
     auth_recover_sent_h:"Enlace enviado",
-    auth_recover_sent_sub:"Revisa tu correo (esto es una simulación: pulsa el botón como si hubieras abierto el enlace).",
+    auth_recover_sent_sub:"Si ese correo tiene una cuenta en Locus Mundi, te hemos enviado un enlace. Ábrelo desde tu correo para elegir una contraseña nueva.",
     auth_recover_sim_btn:"Simular apertura del enlace",
     auth_set_new_password_h:"Elige una contraseña nueva",
     auth_new_password:"Nueva contraseña",auth_save_password_btn:"Guardar contraseña y entrar",
@@ -908,8 +911,10 @@ const T = {
     auth_recover_h:"Recover password",
     auth_recover_sub:"We'll send a link to your email. Open it and you'll be able to sign in directly and choose a new password.",
     auth_recover_btn:"Send link",
+    auth_check_email_h:"Check your email",
+    auth_check_email_sub:"We've sent you a confirmation link. Open it from your email to sign in for the first time.",
     auth_recover_sent_h:"Link sent",
-    auth_recover_sent_sub:"Check your email (this is a simulation: click the button below as if you had opened the link).",
+    auth_recover_sent_sub:"If that email has an account with Locus Mundi, we've sent a link. Open it from your email to choose a new password.",
     auth_recover_sim_btn:"Simulate opening the link",
     auth_set_new_password_h:"Choose a new password",
     auth_new_password:"New password",auth_save_password_btn:"Save password and enter",
@@ -1610,57 +1615,72 @@ function ContactModal({onClose,t}) {
   );
 }
 
-function AuthGate({t,lang,onAuthenticated}) {
-  // step: landing | signup | login | recover | recover_sim | recover_reset
-  const [step,setStep]=useState("landing");
+function AuthGate({t,lang,onAuthenticated,recoveryMode,onRecoveryDone}) {
+  // step: landing | signup | signup_check_email | login | recover | recover_sim | recover_reset
+  const [step,setStep]=useState(recoveryMode?"recover_reset":"landing");
   const [email,setEmail]=useState("");const [pw,setPw]=useState("");const [pw2,setPw2]=useState("");
   const [legalName,setLegalName]=useState("");
   const [secQ,setSecQ]=useState(SECQ[lang==="EN"?"EN":"ES"][0]);const [secA,setSecA]=useState("");
   const [err,setErr]=useState("");
+  const [busy,setBusy]=useState(false);
   const secList = SECQ[lang==="EN"?"EN":"ES"];
   const clean = (v) => v.trim().toLowerCase();
 
-  const doSignup = () => {
+  const doSignup = async () => {
     setErr("");
     if(!email.trim()||!pw||!pw2||!legalName.trim()||!secA.trim()){setErr(t.auth_err_fields);return;}
     if(pw!==pw2){setErr(t.auth_err_mismatch);return;}
-    const authors=loadAuthors();
-    const key=clean(email);
-    if(authors[key]){setErr(t.auth_err_exists);return;}
-    authors[key]={email:email.trim(),password:pw,legalName:legalName.trim(),secQ,secA:secA.trim()};
-    saveAuthors(authors);
-    setSession(key);
-    onAuthenticated(key);
+    setBusy(true);
+    const secAHash = await sha256Hex(clean(secA));
+    const { error } = await supa.auth.signUp({
+      email: email.trim(),
+      password: pw,
+      options: { data: { legalName: legalName.trim(), secQ, secAHash } }
+    });
+    setBusy(false);
+    if(error){
+      // Supabase devuelve un error genérico "User already registered" si el correo ya existe
+      setErr(error.message.toLowerCase().includes("already") ? t.auth_err_exists : error.message);
+      return;
+    }
+    setStep("signup_check_email");
   };
 
-  const doLogin = () => {
+  const doLogin = async () => {
     setErr("");
     if(!email.trim()||!pw){setErr(t.auth_err_fields);return;}
-    const authors=loadAuthors();
-    const key=clean(email);
-    const rec=authors[key];
-    if(!rec||rec.password!==pw){setErr(t.auth_err_login);return;}
-    setSession(key);
-    onAuthenticated(key);
+    setBusy(true);
+    const { data, error } = await supa.auth.signInWithPassword({ email: email.trim(), password: pw });
+    setBusy(false);
+    if(error){setErr(t.auth_err_login);return;}
+    onAuthenticated(data.user.email);
   };
 
-  const doRecoverSend = () => {
+  const doRecoverSend = async () => {
     setErr("");
-    const authors=loadAuthors();
-    if(!authors[clean(email)]){setErr(t.auth_err_notfound);return;}
+    if(!email.trim()){setErr(t.auth_err_fields);return;}
+    setBusy(true);
+    // Por seguridad, Supabase siempre responde igual exista o no esa cuenta
+    // (no revela qué correos están registrados), así que ya no comprobamos
+    // nada antes de mostrar el mensaje de "enlace enviado".
+    const { error } = await supa.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: "https://locusmundi.vercel.app/"
+    });
+    setBusy(false);
+    if(error){setErr(error.message);return;}
     setStep("recover_sim");
   };
 
-  const doSetNewPassword = () => {
+  const doSetNewPassword = async () => {
     setErr("");
     if(!pw||!pw2){setErr(t.auth_err_fields);return;}
     if(pw!==pw2){setErr(t.auth_err_mismatch);return;}
-    const authors=loadAuthors();
-    const key=clean(email);
-    authors[key].password=pw;
-    saveAuthors(authors);
-    setSession(key);
-    onAuthenticated(key);
+    setBusy(true);
+    const { data, error } = await supa.auth.updateUser({ password: pw });
+    setBusy(false);
+    if(error){setErr(error.message);return;}
+    onRecoveryDone&&onRecoveryDone();
+    onAuthenticated(data.user.email);
   };
 
   const card = (children) => (
@@ -1700,7 +1720,16 @@ function AuthGate({t,lang,onAuthenticated}) {
         <div className="fld"><label className="lbl">{t.auth_security_a}</label><input className="inp" value={secA} onChange={e=>setSecA(e.target.value)}/></div>
         <p style={{fontFamily:"var(--body)",fontSize:"0.74rem",color:"var(--muted)",marginTop:"-0.6rem",marginBottom:"1.1rem"}}>{t.auth_security_note}</p>
         {err&&<p style={{fontFamily:"var(--body)",fontSize:"0.86rem",color:"#b23b3b",marginBottom:"1rem"}}>{err}</p>}
-        <button className="btn-pub" style={{width:"100%"}} onClick={doSignup}>{t.auth_create_account_btn}</button>
+        <button className="btn-pub" style={{width:"100%"}} disabled={busy} onClick={doSignup}>{t.auth_create_account_btn}</button>
+      </>)}
+    </div>
+  );
+
+  if(step==="signup_check_email") return (
+    <div className="wr-wrap">
+      {card(<>
+        <h2 className="wr-h">{t.auth_check_email_h}</h2>
+        <p className="wr-sub">{t.auth_check_email_sub}</p>
       </>)}
     </div>
   );
@@ -1714,7 +1743,7 @@ function AuthGate({t,lang,onAuthenticated}) {
         <div className="fld"><label className="lbl">{t.auth_email}</label><input className="inp" type="email" value={email} onChange={e=>setEmail(e.target.value)}/></div>
         <div className="fld"><label className="lbl">{t.auth_password}</label><input className="inp" type="password" value={pw} onChange={e=>setPw(e.target.value)}/></div>
         {err&&<p style={{fontFamily:"var(--body)",fontSize:"0.86rem",color:"#b23b3b",marginBottom:"1rem"}}>{err}</p>}
-        <button className="btn-pub" style={{width:"100%",marginBottom:"0.9rem"}} onClick={doLogin}>{t.auth_login_btn}</button>
+        <button className="btn-pub" style={{width:"100%",marginBottom:"0.9rem"}} disabled={busy} onClick={doLogin}>{t.auth_login_btn}</button>
         <p style={{textAlign:"center"}}><span style={{fontFamily:"var(--body)",fontSize:"0.84rem",color:"var(--gold)",textDecoration:"underline",cursor:"pointer"}} onClick={()=>{setErr("");setPw("");setStep("recover");}}>{t.auth_forgot}</span></p>
       </>)}
     </div>
@@ -1728,7 +1757,7 @@ function AuthGate({t,lang,onAuthenticated}) {
         <p className="wr-sub">{t.auth_recover_sub}</p>
         <div className="fld"><label className="lbl">{t.auth_email}</label><input className="inp" type="email" value={email} onChange={e=>setEmail(e.target.value)}/></div>
         {err&&<p style={{fontFamily:"var(--body)",fontSize:"0.86rem",color:"#b23b3b",marginBottom:"1rem"}}>{err}</p>}
-        <button className="btn-pub" style={{width:"100%"}} onClick={doRecoverSend}>{t.auth_recover_btn}</button>
+        <button className="btn-pub" style={{width:"100%"}} disabled={busy} onClick={doRecoverSend}>{t.auth_recover_btn}</button>
       </>)}
     </div>
   );
@@ -1738,7 +1767,6 @@ function AuthGate({t,lang,onAuthenticated}) {
       {card(<>
         <h2 className="wr-h">{t.auth_recover_sent_h}</h2>
         <p className="wr-sub">{t.auth_recover_sent_sub}</p>
-        <button className="btn-pub" style={{width:"100%"}} onClick={()=>{setPw("");setPw2("");setStep("recover_reset");}}>{t.auth_recover_sim_btn}</button>
       </>)}
     </div>
   );
@@ -1750,7 +1778,7 @@ function AuthGate({t,lang,onAuthenticated}) {
         <div className="fld"><label className="lbl">{t.auth_new_password}</label><input className="inp" type="password" value={pw} onChange={e=>setPw(e.target.value)}/></div>
         <div className="fld"><label className="lbl">{t.auth_password_repeat}</label><input className="inp" type="password" value={pw2} onChange={e=>setPw2(e.target.value)}/></div>
         {err&&<p style={{fontFamily:"var(--body)",fontSize:"0.86rem",color:"#b23b3b",marginBottom:"1rem"}}>{err}</p>}
-        <button className="btn-pub" style={{width:"100%"}} onClick={doSetNewPassword}>{t.auth_save_password_btn}</button>
+        <button className="btn-pub" style={{width:"100%"}} disabled={busy} onClick={doSetNewPassword}>{t.auth_save_password_btn}</button>
       </>)}
     </div>
   );
@@ -1758,12 +1786,20 @@ function AuthGate({t,lang,onAuthenticated}) {
   return null;
 }
 
-function Write({setView,onPublish,onUnpublish,t,lang,onLegal}) {
-  const [session,setSessionState]=useState(()=>getSession());
+function Write({setView,onPublish,onUnpublish,t,lang,onLegal,recoveryMode,onRecoveryDone}) {
+  const [session,setSessionState]=useState(null);
+  const [checking,setChecking]=useState(true);
+  useEffect(()=>{
+    supa.auth.getSession().then(({data})=>{
+      setSessionState(data.session?data.session.user.email:null);
+      setChecking(false);
+    });
+  },[]);
+  if(checking) return null;
   if(!session){
-    return <AuthGate t={t} lang={lang} onAuthenticated={(email)=>setSessionState(email)}/>;
+    return <AuthGate t={t} lang={lang} onAuthenticated={(email)=>setSessionState(email)} recoveryMode={recoveryMode} onRecoveryDone={onRecoveryDone}/>;
   }
-  return <AuthoredWrite setView={setView} onPublish={onPublish} onUnpublish={onUnpublish} t={t} lang={lang} onLegal={onLegal} email={session} onLogout={()=>{setSession(null);setSessionState(null);}}/>;
+  return <AuthoredWrite setView={setView} onPublish={onPublish} onUnpublish={onUnpublish} t={t} lang={lang} onLegal={onLegal} email={session} onLogout={()=>{supa.auth.signOut();setSessionState(null);}}/>;
 }
 
 function AuthoredWrite({setView,onPublish,onUnpublish,t,lang,onLegal,email,onLogout}) {
@@ -1887,11 +1923,19 @@ function AuthoredWrite({setView,onPublish,onUnpublish,t,lang,onLegal,email,onLog
     setShowSaveExit(false);
   };
 
-  // ---- Paso "número de Autor" — se asigna una sola vez, la primera vez que se ve el paso ----
+  // ---- Paso "número de Autor" — ya no se genera localmente: se asignó de verdad
+  // en Supabase (columna `numero_autor` de `autores`) mediante el trigger de alta
+  // en el momento del registro. Aquí solo lo leemos para mostrarlo. ----
   useEffect(()=>{
     if(wStep==="numero"&&!f.authorNumber){
-      const n=assignAuthorNumber();
-      setF(p=>({...p,authorNumber:n,founder:n<=100}));
+      (async () => {
+        const { data: { user } } = await supa.auth.getUser();
+        if(!user) return;
+        const { data, error } = await supa.from("autores").select("numero_autor").eq("id", user.id).single();
+        if(!error && data){
+          setF(p=>({...p,authorNumber:data.numero_autor,founder:data.numero_autor<=100}));
+        }
+      })();
     }
   },[wStep]);
 
@@ -2624,6 +2668,19 @@ function App() {
     localStorage.setItem("lm_read_fs",String(fsStep));
     document.documentElement.style.fontSize=(16*APP_FS_STEPS[fsStep])+"px";
   },[fsStep]);
+  // Si alguien llega desde el enlace de recuperación de contraseña de su
+  // correo, Supabase dispara este evento; lo mandamos directo a la pantalla
+  // de "elige una contraseña nueva" dentro de "Escribe tu historia".
+  const [recoveryMode,setRecoveryMode]=useState(false);
+  useEffect(()=>{
+    const { data: sub } = supa.auth.onAuthStateChange((event)=>{
+      if(event==="PASSWORD_RECOVERY"){
+        setRecoveryMode(true);
+        setView("write");
+      }
+    });
+    return ()=>sub.subscription.unsubscribe();
+  },[]);
   const open=(a)=>{setSel(a);setView("read");};
   return (
     <div>
@@ -2631,7 +2688,7 @@ function App() {
       {view==="home"&&<Home autos={autos} openAuto={open} setView={setView} t={t}/>}
       {view==="library"&&<Library autos={autos} openAuto={open} t={t}/>}
       {view==="read"&&<Read auto={sel} setView={setView} t={t}/>}
-      {view==="write"&&<Write setView={setView} onPublish={a=>{setAutos(p=>[...p,a]);}} onUnpublish={id=>setAutos(p=>p.filter(x=>x.id!==id))} t={t} lang={lang} onLegal={()=>setShowLegal("condiciones")}/>}
+      {view==="write"&&<Write setView={setView} onPublish={a=>{setAutos(p=>[...p,a]);}} onUnpublish={id=>setAutos(p=>p.filter(x=>x.id!==id))} t={t} lang={lang} onLegal={()=>setShowLegal("condiciones")} recoveryMode={recoveryMode} onRecoveryDone={()=>setRecoveryMode(false)}/>}
       <Footer t={t} onContact={()=>setShowContact(true)} onLegal={setShowLegal} onCollab={()=>setShowCollab(true)} onFaq={()=>setShowFaq(true)} onGift={()=>setShowGift(true)}/>
       {showGift&&<GiftModal onClose={()=>setShowGift(false)} t={t}/>}
       {showContact&&<ContactModal onClose={()=>setShowContact(false)} t={t}/>}
